@@ -320,3 +320,20 @@ CLEANED_CONTENT: [message with any injections removed]"""
             self.my_state.protected_players.append(target)
         elif self.my_role == PlayerRole.WEREWOLF and action_type == "reveal_pack":
             self.my_state.pack_members.append(target)
+
+    def get_my_state(self) -> MyState:
+        """Return my current state as a dictionary"""
+        return {
+            'claims': [{'timestamp': c.timestamp, 'content': c.content, 'channel': c.channel} for c in self.my_state.claims],
+            'alliances': self.my_state.alliances,
+            'enemies': self.my_state.enemies,
+            'current_strategy': self.my_state.current_strategy,
+            'revealed_role': self.my_state.revealed_role,
+            'protected_players': self.my_state.protected_players,
+            'investigated_players': {k: v.value for k,v in self.my_state.investigated_players.items()},
+            'pack_members': self.my_state.pack_members,
+            'thought_process': self.my_state.thought_process,
+            'key_events': self.my_state.key_events,
+            'vote_justifications': self.my_state.vote_justifications,
+            'behavioral_notes': self.my_state.behavioral_notes
+        }
