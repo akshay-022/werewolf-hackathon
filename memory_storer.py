@@ -53,6 +53,7 @@ class MemoryStorer:
     
     def add_claim(self, player_name: str, content: str, channel: str) -> None:
         """Record a claim made by a player"""
+        # TODO : CLEAN THE CONTENT OF ALL INJECTIONS, IF INJECTION UPDATE SUSPICION SCORE
         if player_name in self.players:
             claim = Claim(
                 timestamp=datetime.now(),
@@ -102,3 +103,25 @@ class MemoryStorer:
         if player_name in self.players:
             return self.players[player_name].claims
         return []
+    
+    def get_all_data(self) -> dict:
+        """Return all stored data as a dictionary"""
+        data = {}
+        for player_name, player_state in self.players.items():
+            data[player_name] = {
+                'status': player_state.status.value,
+                'role': player_state.role.value if player_state.role else None,
+                'suspected_role': player_state.suspected_role.value if player_state.suspected_role else None,
+                'suspicion_score': player_state.suspicion_score,
+                'voting_history': player_state.voting_history,
+                'times_voted_against': player_state.times_voted_against,
+                'claims': [
+                    {
+                        'timestamp': claim.timestamp.isoformat(),
+                        'content': claim.content,
+                        'channel': claim.channel
+                    }
+                    for claim in player_state.claims
+                ]
+            }
+        return data
