@@ -1,0 +1,124 @@
+{
+  "activity_id": "1730828590_9Hj",
+  "players": [
+    "James",
+    "Chen",
+    "John",
+    "Ananya",
+    "Elise",
+    "Jian",
+    "Emma",
+    "Olivia"
+  ],
+  "game_status": "ended",
+  "player_roles": {
+    "Olivia": "wolf",
+    "John": "wolf",
+    "Emma": "seer",
+    "James": "doctor",
+    "Ananya": "villager",
+    "Chen": "villager",
+    "Elise": "villager",
+    "Jian": "villager"
+  },
+  "success_game_stats": {
+    "winner": "VILLAGERS",
+    "vote_history": {
+      "wolf_votes": {
+        "0": {
+          "John": "James",
+          "Olivia": "James"
+        },
+        "1": {
+          "Olivia": "Emma"
+        },
+        "2": {
+          "Olivia": "Ananya"
+        }
+      },
+      "doctors_save": {
+        "0": "James",
+        "1": "Ananya",
+        "2": "Elise"
+      },
+      "alive_players_votes": {
+        "0": {
+          "John": "Emma",
+          "Chen": "John",
+          "Jian": "John",
+          "Elise": "John",
+          "Olivia": "John",
+          "James": "Jian",
+          "Ananya": "Jian",
+          "Emma": "John"
+        },
+        "1": {
+          "Olivia": "Jian",
+          "Elise": "Jian",
+          "James": "Jian",
+          "Ananya": "James",
+          "Chen": "Jian",
+          "Jian": "Ananya"
+        },
+        "2": {
+          "Olivia": "Chen",
+          "James": "Olivia",
+          "Chen": "Olivia",
+          "Elise": "Olivia"
+        }
+      }
+    },
+    "total_rounds": 3,
+    "round_wise_alive_players": {
+      "0": [
+        "James",
+        "Chen",
+        "Ananya",
+        "Elise",
+        "Jian",
+        "Emma",
+        "Olivia"
+      ],
+      "1": [
+        "James",
+        "Chen",
+        "Ananya",
+        "Elise",
+        "Olivia"
+      ],
+      "2": [
+        "James",
+        "Chen",
+        "Elise"
+      ]
+    },
+    "last_standing_players": [
+      "James",
+      "Chen",
+      "Elise"
+    ],
+    "player_errors": {}
+  },
+  "failure_game_stats": null,
+  "running_game_stats": null,
+  "logs": {
+    "Chen": "transcripts/Chen_1730828590_9Hj_log.txt",
+    "John": "transcripts/John_1730828590_9Hj_log.txt",
+    "Ananya": "transcripts/Ananya_1730828590_9Hj_log.txt",
+    "Elise": "transcripts/Elise_1730828590_9Hj_log.txt",
+    "Jian": "transcripts/Jian_1730828590_9Hj_log.txt",
+    "Emma": "transcripts/Emma_1730828590_9Hj_log.txt",
+    "Olivia": "transcripts/Olivia_1730828590_9Hj_log.txt",
+    "James": "transcripts/James_1730828590_9Hj_log.txt"
+  },
+  "transcripts": {
+    "Chen": "transcripts/Chen_1730828590_9Hj_transcript.jsonl",
+    "John": "transcripts/John_1730828590_9Hj_transcript.jsonl",
+    "Ananya": "transcripts/Ananya_1730828590_9Hj_transcript.jsonl",
+    "Elise": "transcripts/Elise_1730828590_9Hj_transcript.jsonl",
+    "Jian": "transcripts/Jian_1730828590_9Hj_transcript.jsonl",
+    "Emma": "transcripts/Emma_1730828590_9Hj_transcript.jsonl",
+    "Olivia": "transcripts/Olivia_1730828590_9Hj_transcript.jsonl",
+    "James": "transcripts/James_1730828590_9Hj_transcript.jsonl"
+  }
+}

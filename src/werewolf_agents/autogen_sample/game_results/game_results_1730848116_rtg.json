@@ -1,0 +1,114 @@
+{
+  "activity_id": "1730848116_rtg",
+  "players": [
+    "James",
+    "Ananya",
+    "Pietro",
+    "Anna",
+    "Ling",
+    "Yuki",
+    "Abhimanyu",
+    "Klaus"
+  ],
+  "game_status": "ended",
+  "player_roles": {
+    "Anna": "wolf",
+    "James": "wolf",
+    "Abhimanyu": "seer",
+    "Yuki": "doctor",
+    "Pietro": "villager",
+    "Klaus": "villager",
+    "Ling": "villager",
+    "Ananya": "villager"
+  },
+  "success_game_stats": {
+    "winner": "VILLAGERS",
+    "vote_history": {
+      "wolf_votes": {
+        "0": {
+          "James": "Pietro",
+          "Anna": "Klaus"
+        },
+        "1": {
+          "James": "Abhimanyu"
+        }
+      },
+      "doctors_save": {
+        "0": "Pietro",
+        "1": "Abhimanyu"
+      },
+      "alive_players_votes": {
+        "0": {
+          "Anna": "James",
+          "Ananya": "Anna",
+          "Abhimanyu": "Anna",
+          "Yuki": "Anna",
+          "Ling": "Anna",
+          "Pietro": "Anna",
+          "James": "Anna",
+          "Klaus": "Anna"
+        },
+        "1": {
+          "James": "Ananya",
+          "Abhimanyu": "James",
+          "Ananya": "James",
+          "Pietro": "James",
+          "Klaus": "James",
+          "Yuki": "James",
+          "Ling": "James"
+        }
+      }
+    },
+    "total_rounds": 2,
+    "round_wise_alive_players": {
+      "0": [
+        "James",
+        "Ananya",
+        "Pietro",
+        "Ling",
+        "Yuki",
+        "Abhimanyu",
+        "Klaus"
+      ],
+      "1": [
+        "Ananya",
+        "Pietro",
+        "Ling",
+        "Yuki",
+        "Abhimanyu",
+        "Klaus"
+      ]
+    },
+    "last_standing_players": [
+      "Ananya",
+      "Pietro",
+      "Ling",
+      "Yuki",
+      "Abhimanyu",
+      "Klaus"
+    ],
+    "player_errors": {}
+  },
+  "failure_game_stats": null,
+  "running_game_stats": null,
+  "logs": {
+    "Ananya": "transcripts/Ananya_1730848116_rtg_log.txt",
+    "Pietro": "transcripts/Pietro_1730848116_rtg_log.txt",
+    "Anna": "transcripts/Anna_1730848116_rtg_log.txt",
+    "Ling": "transcripts/Ling_1730848116_rtg_log.txt",
+    "Yuki": "transcripts/Yuki_1730848116_rtg_log.txt",
+    "Abhimanyu": "transcripts/Abhimanyu_1730848116_rtg_log.txt",
+    "Klaus": "transcripts/Klaus_1730848116_rtg_log.txt",
+    "James": "transcripts/James_1730848116_rtg_log.txt"
+  },
+  "transcripts": {
+    "Ananya": "transcripts/Ananya_1730848116_rtg_transcript.jsonl",
+    "Pietro": "transcripts/Pietro_1730848116_rtg_transcript.jsonl",
+    "Anna": "transcripts/Anna_1730848116_rtg_transcript.jsonl",
+    "Ling": "transcripts/Ling_1730848116_rtg_transcript.jsonl",
+    "Yuki": "transcripts/Yuki_1730848116_rtg_transcript.jsonl",
+    "Abhimanyu": "transcripts/Abhimanyu_1730848116_rtg_transcript.jsonl",
+    "Klaus": "transcripts/Klaus_1730848116_rtg_transcript.jsonl",
+    "James": "transcripts/James_1730848116_rtg_transcript.jsonl"
+  }
+}
