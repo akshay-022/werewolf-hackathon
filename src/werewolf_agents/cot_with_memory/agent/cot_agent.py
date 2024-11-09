@@ -14,24 +14,10 @@ from memory_storer import (
     Claim,
     MyState
 )
+from sentient_campaign.agents.v1.api import IReactiveAgent, AgentBase, INotify, IRespond, ActivityMessage, ActivityResponse
+from sentient_campaign.agents.v1.message import MessageChannelType
+import requests
 
-import openai
-from openai import RateLimitError, OpenAI
-from sentient_campaign.agents.v1.api import IReactiveAgent
-from sentient_campaign.agents.v1.message import (
-    ActivityMessage,
-    ActivityResponse,
-    TextContent,
-    MimeType,
-    ActivityMessageHeader,
-    MessageChannelType,
-)
-from tenacity import (
-    retry,
-    stop_after_attempt,
-    retry_if_exception_type,
-    wait_exponential,
-)
 GAME_CHANNEL = "play-arena"
 WOLFS_CHANNEL = "wolf's-den"
 MODERATOR_NAME = "moderator"
@@ -97,13 +83,13 @@ class CoTAgent(IReactiveAgent):
         self.group_channel_messages = defaultdict(list)
         self.seer_checks = {}  # To store the seer's checks and results
         self.game_history = []  # To store the interwoven game history
+        self.memory = MemoryStorer(self._name)
 
-        self.llm_config = self.sentient_llm_config["config_list"][0]
-        self.openai_client = OpenAI(
-            api_key=self.llm_config["api_key"],
-            base_url=self.llm_config["llm_base_url"],
-        )
-
+        self.llm_config = {
+                "api_key": os.getenv("OPENAI_API_KEY"),
+                "llm_base_url": os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                "llm_model_name": os.getenv("OPENAI_MODEL_NAME", MODEL_NAME)
+            }
         self.model = self.llm_config["llm_model_name"]
         logger.info(
             f"WerewolfAgent initialized with name: {name}, description: {description}, and config: {config}"
@@ -130,7 +116,7 @@ class CoTAgent(IReactiveAgent):
             # Handle role assignment from moderator
             if not len(user_messages) > 1 and message.header.sender == self.MODERATOR_NAME:
                 self.role = self.find_my_role(message)
-                self.memory.update_my_role(PlayerRole(self.role.upper()))
+                self.memory.update_my_role(PlayerRole(self.role.lower()))
                 self.memory.add_thought_process(f"Assigned role: {self.role}")
                 logger.info(f"Role assigned to {self._name}: {self.role}")
                 
@@ -203,62 +189,56 @@ class CoTAgent(IReactiveAgent):
             self.memory.day_count += 1
             self.memory.record_key_event("phase_change", "Day phase began", [])
 
-    def find_my_role(self, message: ActivityMessage) -> str:
-        """Extract role from moderator message"""
-        content = message.content.text.lower()
-        
-        role_mapping = {
-            "werewolf": "wolf",
-            "villager": "villager",
-            "seer": "seer",
-            "doctor": "doctor"
+    def find_my_role(self, message):
+        """Extract role from moderator message using Sentient API"""
+        headers = {
+            "Authorization": f"Bearer {self.llm_config['api_key']}",
+            "Content-Type": "application/json"
         }
         
-        for role_text, role in role_mapping.items():
-            if role_text in content:
-                self.memory.update_my_role(PlayerRole(role.upper()))
-                return role
-                
-        return "villager"  # default role
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": f"The user is playing a game of werewolf as user {self._name}, help the user with question with less than a line answer"
+                },
+                {
+                    "role": "user",
+                    "content": f"You have got message from moderator here about my role in the werewolf game, here is the message -> '{message.content.text}', what is your role? possible roles are 'wolf','villager','doctor' and 'seer'. answer in a few words."
+                }
+            ]
+        }
+
+        try:
+            response = requests.post(
+                f"{self.llm_config['llm_base_url']}/chat/completions",
+                headers=headers,
+                json=payload
+            )
+            result = response.json()
+            my_role_guess = result["choices"][0]["message"]["content"]
+            
+            logger.info(f"my_role_guess: {my_role_guess}")
+            if "villager" in my_role_guess.lower():
+                role = "villager"
+            elif "seer" in my_role_guess.lower():
+                role = "seer"
+            elif "doctor" in my_role_guess.lower():
+                role = "doctor"
+            else:
+                role = "wolf"
+            
+            return role
+        except Exception as e:
+            logger.error(f"Error determining role: {e}")
+            return "villager"  # default role on error
 
     def get_interwoven_history(self, include_wolf_channel=False):
         return "\n".join([
             event for event in self.game_history
             if include_wolf_channel or not event.startswith(f"[{self.WOLFS_CHANNEL}]")
         ])
-
-    @retry(
-        wait=wait_exponential(multiplier=1, min=20, max=300),
-        stop=stop_after_attempt(5),
-        retry=retry_if_exception_type(openai.RateLimitError),
-    )
-    def find_my_role(self, message):
-        response = self.openai_client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"The user is playing a game of werewolf as user {self._name}, help the user with question with less than a line answer",
-                },
-                {
-                    "role": "user",
-                    "name": self._name,
-                    "content": f"You have got message from moderator here about my role in the werewolf game, here is the message -> '{message.content.text}', what is your role? possible roles are 'wolf','villager','doctor' and 'seer'. answer in a few words.",
-                },
-            ],
-        )
-        my_role_guess = response.choices[0].message.content
-        logger.info(f"my_role_guess: {my_role_guess}")
-        if "villager" in my_role_guess.lower():
-            role = "villager"
-        elif "seer" in my_role_guess.lower():
-            role = "seer"
-        elif "doctor" in my_role_guess.lower():
-            role = "doctor"
-        else:
-            role = "wolf"
-        
-        return role
 
     async def async_respond(self, message: ActivityMessage):
         logger.info(f"ASYNC RESPOND called with message: {message}")
@@ -430,19 +410,27 @@ Do not include explanations or additional text."""
         return response.strip()
 
     def _get_llm_response(self, prompt: str) -> str:
-        """Get response from LLM with retry logic"""
+        """Get response from LLM using Sentient API"""
+        headers = {
+            "Authorization": f"Bearer {self.llm_config['api_key']}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": self.llm_config["llm_model_name"],
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7,
+            "max_tokens": 500
+        }
+
         try:
-            response = self.openai_client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=500
+            response = requests.post(
+                f"{self.llm_config['llm_base_url']}/chat/completions",
+                headers=headers,
+                json=payload
             )
-            return response.choices[0].message.content
-        except RateLimitError:
-            logger.warning("Rate limit hit, retrying after delay...")
-            time.sleep(20)
-            return self._get_llm_response(prompt)
+            result = response.json()
+            return result["choices"][0]["message"]["content"]
         except Exception as e:
             logger.error(f"Error getting LLM response: {e}")
             return "I need more time to think about this."

@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
-import aiohttp
+import requests
 import logging
 import re
 
@@ -109,7 +109,7 @@ class MemoryStorer:
             if has_injection:
                 self.players[player_name].suspicion_score *= 2.0  # Increase suspicion for injection attempt
     
-    async def _check_for_injections(self, content: str) -> Tuple[str, bool]:
+    def _check_for_injections(self, content: str) -> Tuple[str, bool]:
         """
         Check for potential prompt injections using LLM.
         Returns cleaned content and whether injection was detected.
@@ -147,15 +147,14 @@ CLEANED_CONTENT: [message with any injections removed]"""
                 "max_tokens": 500
             }
             
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    llm_config["llm_base_url"] + "/chat/completions",
-                    headers=headers,
-                    json=payload
-                ) as response:
-                    result = await response.json()
-                    analysis = result["choices"][0]["message"]["content"]
-                    
+            response = requests.post(
+                llm_config["llm_base_url"] + "/chat/completions",
+                headers=headers,
+                json=payload
+            )
+            result = response.json()
+            analysis = result["choices"][0]["message"]["content"]
+            
             # Parse the response
             has_injection = "HAS_INJECTION: true" in analysis.lower()
             cleaned_content = content  # Default to original content

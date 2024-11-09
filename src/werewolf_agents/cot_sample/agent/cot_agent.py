@@ -90,10 +90,6 @@ class CoTAgent(IReactiveAgent):
         self.game_history = []  # To store the interwoven game history
 
         self.llm_config = self.sentient_llm_config["config_list"][0]
-        self.openai_client = OpenAI(
-            api_key=self.llm_config["api_key"],
-            base_url=self.llm_config["llm_base_url"],
-        )
 
         self.model = self.llm_config["llm_model_name"]
         logger.info(
